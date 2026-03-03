@@ -1,5 +1,12 @@
-<?php include 'includes/template/header.php'; ?>
+<?php 
 
+    require 'includes/app.php';
+    require 'includes/funciones.php';
+
+
+    
+    incluirTemplate('header');
+?>
     <main class="contenedor seccion contenido-centrado  ">
         <h1>Nuestro Blog</h1>
 
@@ -93,4 +100,4 @@
             </article>
     </main>
 
-<?php include 'includes/template/footer.php'; ?>
+<?php incluirTemplate('footer'); ?>
