@@ -29,13 +29,16 @@
         // echo "</prev>";
         
 
-        $titulo = $_POST['Titulo'];
-        $precio = $_POST['Precio'];
-        $descripcion = $_POST['Descripcion'];
-        $habitaciones = $_POST['Habitacion'];
-        $wc = $_POST['Wc'];
-        $estacionamiento = $_POST['Estacionamiento'];
-        $vendedor = $_POST['Vendedor'];
+        $titulo = mysqli_real_escape_string($db, $_POST['Titulo']);
+        $precio = mysqli_real_escape_string($db, $_POST['Precio']);
+        $descripcion = mysqli_real_escape_string($db, $_POST['Descripcion']);
+        $habitaciones = mysqli_real_escape_string($db, $_POST['Habitacion']);
+        $wc = mysqli_real_escape_string($db, $_POST['Wc']);
+        $estacionamiento = mysqli_real_escape_string($db, $_POST['Estacionamiento']);
+        $vendedor = mysqli_real_escape_string($db, $_POST['Vendedor']);
+
+        //asigna files hacia un variable
+        $imagen= $_FILES['imagen'];
 
         if(!$titulo){
             $error [] = "debe añadir obligatoriamente un titulo";
@@ -60,18 +63,54 @@
         if(!$estacionamiento){
             $error [] = "debe añadir obligatoriamente la cantidad de lugares de estacionamiento";
         }
+
+        if($imagen['error']){
+            $error[] = "debe añadir una imagen obligatoriamente";
+        }
+
+        // //validar por tamaño
+
+         $medida = 1000 * 5000;
+
+         if($imagen['size'] > $medida){
+             $error[] = "la imagen debe ser de menos de 100kb";
+        }
         
         //revisar errores
 
         if(empty($error)){
+            
+            // SUBIDA DE ARCHIVOS
+
+            //crear carpeta
+
+            $carpetaImg = '../../imagenes/';
+
+            mkdir($carpetaImg);
+
+            if(!is_dir($carpetaImg)){
+                mkdir($carpetaImg);
+
+            
+            }
+
+            //generacion de nombre unico
+
+            $nombreImg = md5( uniqid( rand(), true )) . ".jpg";
+
+            //subir la img
+
+            move_uploaded_file($imagen['tmp_name'], $carpetaImg . $nombreImg);
+
+
             //insertar db
-            $query = " INSERT INTO propiedades (titulo, precio, descripcion, habitaciones, wc, estacionamiento, creado, vendedores_id)
-            VALUES ( '$titulo', '$precio', '$descripcion', '$habitaciones', '$wc', '$estacionamiento','$creado', '$vendedor')";
+            $query = " INSERT INTO propiedades (titulo, precio, imagen, descripcion, habitaciones, wc, estacionamiento, creado, vendedores_id)
+            VALUES ( '$titulo', '$precio', '$nombreImg', '$descripcion', '$habitaciones', '$wc', '$estacionamiento','$creado', '$vendedor')";
 
             $resultado = mysqli_query($db, $query);
 
             if($resultado){
-                header('location: /admin');
+                header('location: /admin?resultado=1'); 
             }else{
                 echo "hubo error";
             }
@@ -98,7 +137,7 @@
             
         <?php endforeach; ?>    
 
-        <form class="formulario" action="" method="POST" action="/admin/propiedades/crear.php">
+        <form class="formulario" action="" method="POST" action="/admin/propiedades/crear.php" enctype="multipart/form-data">
         <fieldset>
             <legend>Informacion General</legend>
 
