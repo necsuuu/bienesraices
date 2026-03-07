@@ -43,6 +43,7 @@
     $estacionamiento = $propiedades['estacionamiento'];
     $vendedor = $propiedades['vendedores_id'];
     $creado = date('Y/m/d');
+    $imagenPropiedad = $propiedades['imagen'];
 
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
         // echo "<prev>";
@@ -85,10 +86,6 @@
             $error [] = "debe añadir obligatoriamente la cantidad de lugares de estacionamiento";
         }
 
-        if($imagen['error']){
-            $error[] = "debe añadir una imagen obligatoriamente";
-        }
-
         // //validar por tamaño
 
          $medida = 1000 * 5000;
@@ -100,20 +97,35 @@
         //revisar errores
 
         if(empty($error)){
-            
-            // SUBIDA DE ARCHIVOS
 
             //crear carpeta
 
             $carpetaImg = '../../imagenes/';
 
-            mkdir($carpetaImg);
+
 
             if(!is_dir($carpetaImg)){
                 mkdir($carpetaImg);
-
+            }        
             
+            $nombreImg = '';
+
+            // SUBIDA DE ARCHIVOS
+
+            if($imagen['name']){
+                //eliminar img previa
+                unlink($carpetaImg . $propiedades['imagen']);
+                //generacion de nombre unico
+
+                $nombreImg = md5( uniqid( rand(), true )) . ".jpg";
+
+                //subir la img
+
+                move_uploaded_file($imagen['tmp_name'], $carpetaImg . $nombreImg);
+            }else{
+                $nombreImg = $propiedades['imagen'];
             }
+
 
             //generacion de nombre unico
 
@@ -125,13 +137,13 @@
 
 
             //insertar db
-            $query = " INSERT INTO propiedades (titulo, precio, imagen, descripcion, habitaciones, wc, estacionamiento, creado, vendedores_id)
-            VALUES ( '$titulo', '$precio', '$nombreImg', '$descripcion', '$habitaciones', '$wc', '$estacionamiento','$creado', '$vendedor')";
+            $query = "UPDATE propiedades SET titulo = '{$titulo}',precio = '{$precio}', imagen = '{$nombreImg}',descripcion = '{$descripcion}',habitaciones = {$habitaciones},wc = {$wc},
+            estacionamiento = {$estacionamiento},vendedores_id = {$vendedor} WHERE id = {$id}";
 
             $resultado = mysqli_query($db, $query);
 
             if($resultado){
-                header('location: /admin?resultado=1'); 
+                header('location: /admin?resultado=2'); 
             }else{
                 echo "hubo error";
             }
@@ -170,6 +182,8 @@
 
             <label for="imagen">Imagen:</label>
             <input type="file" id="imagen" name="imagen" accept="image/jpeg, image/png">
+
+            <img src="/imagenes/<?php echo $imagenPropiedad; ?>" class="imagen-small" alt="">
 
             <label for="Descripcion">Descripcion:</label>
             <textarea name="Descripcion" id="Descripcion"><?php echo $titulo; ?></textarea>
