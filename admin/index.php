@@ -18,6 +18,31 @@
         $resultado = $_GET['resultado'] ?? null;   
         
         if($_SERVER['REQUEST_METHOD'] === 'POST'){
+            $id = $_POST['id'];
+            $id = filter_var($id, FILTER_VALIDATE_INT);
+
+            if($id){
+                //eliminar archivo
+
+                $query = "SELECT imagen FROM propiedades WHERE id = {$id}";
+
+                $resultado = mysqli_query($db, $query);
+                $resultado = mysqli_fetch_assoc($resultado);
+
+                unlink('../imagenes/' . $resultado['imagen']);
+
+
+
+                //eliminar propiedad
+                $query = "DELETE FROM propiedades WHERE id = {$id}";
+                $resultado = mysqli_query($db, $query);
+
+                if($resultado){
+                    header('location: /admin?resultado=3');
+                }
+
+
+            }
             
         }
 
@@ -31,6 +56,8 @@
                 <p class="alerta exito">Propiedad Publicada Correctamente</p>
             <?php elseif($resultado == 2):?>
                 <p class="alerta exito">Propiedad Actualizada Correctamente</p>
+            <?php elseif($resultado == 3):?>
+                <p class="alerta exito">Propiedad Se Elimino Correctamente</p>
             <?php endif;?>
 
             <a href="/admin/propiedades/crear.php" class="boton boton-verde">Nueva Propiedad</a>

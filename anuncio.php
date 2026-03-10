@@ -1,40 +1,59 @@
 <?php 
 
-    require 'includes/app.php';
-    require 'includes/funciones.php';
+require 'includes/app.php';
+require 'includes/funciones.php';
 
+$id = $_GET['id'];
+$id = filter_var($id, FILTER_VALIDATE_INT);
 
-    
-    incluirTemplate('header');
+if(!$id){
+    header('location: /');
+}
+
+// DB
+require 'includes/config/databases.php';
+$db = conectar();
+
+$query = "SELECT * FROM propiedades WHERE id = {$id}";
+$resultado = mysqli_query($db, $query);
+$propiedad = mysqli_fetch_assoc($resultado);
+
+incluirTemplate('header');
 ?>
-    <main class="contenedor seccion contenido-centrado">
-        <h1>casa en venta frente al bosque</h1>
 
-        <picture>
-            <source srcset="build/img/destacada.webp" type="img webp">
-            <source srcset="build/img/destacada.jpg" type="img jepg">
-            <img loading="lazy" src="build/img/destacada.jpg" alt="img">
-        </picture>
+<main class="contenedor seccion contenido-centrado">
 
-        <div class="resumen-propiedad">
-            <p class="precio">$3,000,000</p>
-                    <ul class="iconos-caracteristicas">
-                        <li>
-                            <img loading="lazy" src="build/img/icono_wc.svg" alt="wc">
-                            <p>3</p>
-                        </li>
-                         <li>
-                            <img loading="lazy" src="build/img/icono_estacionamiento.svg" alt="icono_estacionamiento">
-                            <p>3</p>
-                        </li>
-                         <li>
-                            <img loading="lazy" src="build/img/icono_dormitorio.svg" alt="icono_dormitorio">
-                            <p>4</p>
-                        </li>
-                    </ul>
+<h1><?php echo $propiedad['titulo']; ?></h1>
 
-                    <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Tempore laudantium modi perferendis sequi ullam quisquam soluta sapiente fugit maxime autem nulla, placeat itaque nostrum id ea optio ratione veritatis fuga! Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, tenetur! Fugit soluta quod dolore mollitia porro, praesentium ut recusandae ea fugiat consequuntur necessitatibus nihil harum impedit ipsam dicta hic dolorum!</p>
-        </div>
-    </main>
+<img loading="lazy" src="/imagenes/<?php echo $propiedad['imagen']; ?>" alt="imagen propiedad">
+
+<div class="resumen-propiedad">
+
+<p class="precio">$<?php echo $propiedad['precio']; ?></p>
+
+<ul class="iconos-caracteristicas">
+
+<li>
+<img loading="lazy" src="build/img/icono_wc.svg">
+<p><?php echo $propiedad['wc']; ?></p>
+</li>
+
+<li>
+<img loading="lazy" src="build/img/icono_estacionamiento.svg">
+<p><?php echo $propiedad['estacionamiento']; ?></p>
+</li>
+
+<li>
+<img loading="lazy" src="build/img/icono_dormitorio.svg">
+<p><?php echo $propiedad['habitaciones']; ?></p>
+</li>
+
+</ul>
+
+<p><?php echo $propiedad['descripcion']; ?></p>
+
+</div>
+
+</main>
 
 <?php incluirTemplate('footer'); ?>

@@ -8,8 +8,6 @@
         header('location: /admin');
     }
 
-     var_dump($id);
-
     // db
 
     require '../../includes/config/databases.php';
