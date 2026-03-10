@@ -1,7 +1,6 @@
 <?php 
 
 require 'includes/app.php';
-require 'includes/funciones.php';
 
 $id = $_GET['id'];
 $id = filter_var($id, FILTER_VALIDATE_INT);

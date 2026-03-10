@@ -1,5 +1,12 @@
 <?php 
 
+    require '../../includes/app.php';
+    $auth= estaAuth();
+
+    if(!$auth){
+        header('location: /');
+    }
+
     //validar url por id
     $id = $_GET['id'];
     $id = filter_var($id, FILTER_VALIDATE_INT);
@@ -153,7 +160,7 @@
 
 
 
-    require '../../includes/funciones.php';
+   
     incluirTemplate('header');
 ?>
     <main class="contenedor seccion">

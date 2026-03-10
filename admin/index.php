@@ -1,5 +1,12 @@
     <?php 
 
+        require '../includes/app.php';
+        $auth= estaAuth();
+
+        if(!$auth){
+            header('location: /');
+        }
+
         //importar db
 
         require '../includes/config/databases.php';
@@ -47,7 +54,6 @@
         }
 
         //incluir template
-        require '../includes/funciones.php';
         incluirTemplate('header');
     ?>
         <main class="contenedor seccion">
