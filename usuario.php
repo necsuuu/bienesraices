@@ -2,7 +2,7 @@
 
     //importar conexion
 
-    require 'includes/config/databases.php';
+    require 'includes/app.php';
     $db = conectar();
 
     //crear email y password

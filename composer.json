@@ -1,0 +1,17 @@
+{
+    "name": "necsuuu/bienesraices_inicio",
+    "description": "agregando poo",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Necsuuu",
+            "email": "br902037@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "App\\": "./clases"
+        }
+    }
+}

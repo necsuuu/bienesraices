@@ -31,7 +31,7 @@
                     <a href="blog.php">Blog</a>
                     <a href="contacto.php">Contacto</a>
                     <?php if($auth): ?>
-                        <a href="admin.php">Crear</a>
+                        <a href="../../admin/propiedades/crear.php">Crear</a>
                         <a href="cerrar-sesion.php">Cerrar Sesion</a>
                     <?php endif; ?>
 

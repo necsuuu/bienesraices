@@ -4,8 +4,7 @@
     require_once 'includes/app.php';
     incluirTemplate('header');
 
-    //conectar base de datos
-    require 'includes/config/databases.php';
+    //conectar db
     $db = conectar();
     //autenticar el usuario
 

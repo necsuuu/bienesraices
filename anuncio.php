@@ -10,7 +10,6 @@ if(!$id){
 }
 
 // DB
-require 'includes/config/databases.php';
 $db = conectar();
 
 $query = "SELECT * FROM propiedades WHERE id = {$id}";

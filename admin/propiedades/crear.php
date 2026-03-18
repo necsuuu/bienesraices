@@ -1,15 +1,14 @@
 <?php 
 
     require '../../includes/app.php';
-    $auth= estaAuth();
 
-    if(!$auth){
-        header('location: /');
-    }
+    use App\Propiedad;
+
+    estaAuth();
+    
 
     // db
 
-    require '../../includes/config/databases.php';
     $db = conectar();
 
     //consultar para los vendedores
@@ -35,7 +34,10 @@
         // echo "<prev>";
         // var_dump($_POST);
         // echo "</prev>";
-        
+
+        $propiedad = new Propiedad($_POST);
+
+        $propiedad->guardar();        
 
         $titulo = mysqli_real_escape_string($db, $_POST['Titulo']);
         $precio = mysqli_real_escape_string($db, $_POST['Precio']);
@@ -109,11 +111,6 @@
             //subir la img
 
             move_uploaded_file($imagen['tmp_name'], $carpetaImg . $nombreImg);
-
-
-            //insertar db
-            $query = " INSERT INTO propiedades (titulo, precio, imagen, descripcion, habitaciones, wc, estacionamiento, creado, vendedores_id)
-            VALUES ( '$titulo', '$precio', '$nombreImg', '$descripcion', '$habitaciones', '$wc', '$estacionamiento','$creado', '$vendedor')";
 
             $resultado = mysqli_query($db, $query);
 

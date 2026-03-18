@@ -1,8 +1,11 @@
 <?php
 
-// Definir rutas
-define('TEMPLATES_URL', __DIR__ . '/template');
-define('FUNCIONES_URL', __DIR__ . '/funciones.php');
+require_once 'funciones.php';
+require_once 'config/databases.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
-// incluir funciones
-require_once FUNCIONES_URL;
+use App\Propiedad;
+
+$propiedad = new Propiedad;
+
+Propiedad::setDB();
