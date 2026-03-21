@@ -1,193 +1,124 @@
 <?php 
 
-    require '../../includes/app.php';
+require '../../includes/app.php';
 
-    use App\Propiedad;
+use App\Propiedad;
+use Intervention\Image\ImageManager as image;
+use Intervention\Image\Drivers\Gd\Driver;
 
-    estaAuth();
+estaAuth();
+
+// DB
+$db = conectar();
+Propiedad::setDB($db);
+
+// vendedores
+$consulta = "SELECT * FROM vendedores";
+$resultado = mysqli_query($db, $consulta);
+
+// errores
+$errores = Propiedad::getErrores();
+
+// valores
+$datos = [
+    'titulo' => '',
+    'precio' => '',
+    'descripcion' => '',
+    'habitaciones' => '',
+    'wc' => '',
+    'estacionamiento' => '',
+    'vendedores_id' => ''
+];
+
+if($_SERVER['REQUEST_METHOD'] === 'POST') {
     
+    $propiedad = new Propiedad($_POST);
 
-    // db
+      // nombre unico
+     $nombreImg = md5(uniqid(rand(), true)) . ".jpg";
+     if($_FILES['imagen']['tmp_name']) {
+        $manager = new image(new Driver());
+        $imagen = $manager->read($_FILES['imagen']['tmp_name'])->cover(800, 600);
+        $propiedad->setImg($nombreImg);
+     }
 
-    $db = conectar();
+    $error = $propiedad->validar();
 
-    //consultar para los vendedores
+    // SI TODO OK
+    if(empty($errores)) {
 
-    $consulta = "SELECT * FROM vendedores";
-    $resultado = mysqli_query($db, $consulta);
-
-
-    //arreglo con msj de errores
-
-    $error = [];
-
-    $titulo = '';
-    $precio = '';
-    $descripcion = '';
-    $habitaciones = '';
-    $wc = '';
-    $estacionamiento = '';
-    $vendedor = '';
-    $creado = date('Y/m/d');
-
-    if($_SERVER['REQUEST_METHOD'] === 'POST'){
-        // echo "<prev>";
-        // var_dump($_POST);
-        // echo "</prev>";
-
-        $propiedad = new Propiedad($_POST);
-
-        $propiedad->guardar();        
-
-        $titulo = mysqli_real_escape_string($db, $_POST['Titulo']);
-        $precio = mysqli_real_escape_string($db, $_POST['Precio']);
-        $descripcion = mysqli_real_escape_string($db, $_POST['Descripcion']);
-        $habitaciones = mysqli_real_escape_string($db, $_POST['Habitacion']);
-        $wc = mysqli_real_escape_string($db, $_POST['Wc']);
-        $estacionamiento = mysqli_real_escape_string($db, $_POST['Estacionamiento']);
-        $vendedor = mysqli_real_escape_string($db, $_POST['Vendedor']);
-
-        //asigna files hacia un variable
-        $imagen= $_FILES['imagen'];
-
-        if(!$titulo){
-            $error [] = "debe añadir obligatoriamente un titulo";
+        // carpeta
+        if(!is_dir(CARPETA_IMAGENES)){ {
+            mkdir(CARPETA_IMAGENES);
         }
 
-        if(!$precio){
-            $error [] = "debe añadir obligatoriamente un precio";
+        // guardar la imagen
+        $imagen->save(CARPETA_IMAGENES . $nombreImg);
+
+        // guardar
+        $resultado = $propiedad->guardar();
+
+        if($resultado) {
+            header('Location: /admin?resultado=1');
         }
-
-        if(strlen( $descripcion) < 50 ){
-            $error [] = "debe añadir obligatoriamente una descripcion y debe tener almenos 50 caracteres";
-        }
-
-        if(!$habitaciones){
-            $error [] = "debe añadir obligatoriamente la cantidad de habitaciones";
-        }
-
-        if(!$wc){
-            $error [] = "debe añadir obligatoriamente la cantidad de baños";
-        }
-
-        if(!$estacionamiento){
-            $error [] = "debe añadir obligatoriamente la cantidad de lugares de estacionamiento";
-        }
-
-        if($imagen['error']){
-            $error[] = "debe añadir una imagen obligatoriamente";
-        }
-
-        // //validar por tamaño
-
-         $medida = 1000 * 5000;
-
-         if($imagen['size'] > $medida){
-             $error[] = "la imagen debe ser de menos de 100kb";
-        }
-        
-        //revisar errores
-
-        if(empty($error)){
-            
-            // SUBIDA DE ARCHIVOS
-
-            //crear carpeta
-
-            $carpetaImg = '../../imagenes/';
-
-            mkdir($carpetaImg);
-
-            if(!is_dir($carpetaImg)){
-                mkdir($carpetaImg);
-
-            
-            }
-
-            //generacion de nombre unico
-
-            $nombreImg = md5( uniqid( rand(), true )) . ".jpg";
-
-            //subir la img
-
-            move_uploaded_file($imagen['tmp_name'], $carpetaImg . $nombreImg);
-
-            $resultado = mysqli_query($db, $query);
-
-            if($resultado){
-                header('location: /admin?resultado=1'); 
-            }else{
-                echo "hubo error";
-            }
-        }
-
-        
-
     }
+}
+}
 
-    incluirTemplate('header');
+incluirTemplate('header');
 ?>
-    <main class="contenedor seccion">
-        <h1>Crear</h1>
 
-        <a href="/admin" class="boton boton-verde">Volver</a>
+<main class="contenedor seccion">
+    <h1>Crear</h1>
 
-        <?php foreach($error as $errores):  ?>
-            <div class="alerta error">
-                <?php echo $errores; ?>
-            </div>
-            
-        <?php endforeach; ?>    
+    <a href="/admin" class="boton boton-verde">Volver</a>
 
-        <form class="formulario" action="" method="POST" action="/admin/propiedades/crear.php" enctype="multipart/form-data">
+    <?php foreach($errores as $error): ?>
+        <div class="alerta error">
+            <?php echo $error; ?>
+        </div>
+    <?php endforeach; ?>
+
+    <form class="formulario" method="POST" enctype="multipart/form-data">
+
         <fieldset>
-            <legend>Informacion General</legend>
+            <legend>Información General</legend>
 
-            <label for="Titulo">Titulo:</label>
-            <input type="text" id="Titulo" name="Titulo" placeholder="Titulo Propiedad" value="<?php echo $titulo; ?>">
+            <label>Titulo:</label>
+            <input type="text" name="titulo" value="<?php echo $datos['titulo']; ?>">
 
-            <label for="precio">precio:</label>
-            <input type="number" id="precio" name="Precio" placeholder="Precio de la Propiedad" value="<?php echo $precio; ?>">
+            <label>Precio:</label>
+            <input type="number" name="precio" value="<?php echo $datos['precio']; ?>">
 
-            <label for="imagen">Imagen:</label>
-            <input type="file" id="imagen" name="imagen" accept="image/jpeg, image/png">
+            <label>Imagen:</label>
+            <input type="file" name="imagen">
 
-            <label for="Descripcion">Descripcion:</label>
-            <textarea name="Descripcion" id="Descripcion"><?php echo $titulo; ?></textarea>
-
+            <label>Descripción:</label>
+            <textarea name="descripcion"><?php echo $datos['descripcion']; ?></textarea>
         </fieldset>
 
         <fieldset>
+            <legend>Detalles</legend>
 
-        <legend>Informacion de la Propiedad</legend>
-
-        <label for="Habitaciones">Habitaciones:</label>
-        <input type="number" id="Habitaciones" name="Habitacion" placeholder="Ej: 3" min="1" max="9" value="<?php echo $habitaciones; ?>">
-
-        <label for="wc">Baños:</label>
-        <input type="number" id="wc" value="<?php echo $wc; ?>" name="Wc" placeholder="Ej: 3" min="1" max="9">
-
-        <label for="Estacionamiento">Estacionamiento:</label>
-        <input type="number" id="Estacionamiento" name="Estacionamiento" placeholder="Ej: 3" min="1" max="9" value="<?php echo $estacionamiento; ?>">
-
-
+            <input type="number" name="habitaciones" placeholder="Habitaciones" value="<?php echo $datos['habitaciones']; ?>">
+            <input type="number" name="wc" placeholder="Baños" value="<?php echo $datos['wc']; ?>">
+            <input type="number" name="estacionamiento" placeholder="Estacionamiento" value="<?php echo $datos['estacionamiento']; ?>">
         </fieldset>
-
 
         <fieldset>
             <legend>Vendedor</legend>
-            <select name="Vendedor">
-                <?php while($vendedor = mysqli_fetch_assoc($resultado)): ?>
-                    <option value="<?php echo $vendedor['id']; ?>">
-                        <?php echo $vendedor['nombre'] . " " . $vendedor['apellido']; ?>
+            <select name="vendedores_id">
+                <option value="">-- Seleccionar --</option>
+                <?php while($v = mysqli_fetch_assoc($resultado)): ?>
+                    <option value="<?php echo $v['id']; ?>">
+                        <?php echo $v['nombre'] . " " . $v['apellido']; ?>
                     </option>
                 <?php endwhile; ?>
             </select>
         </fieldset>
 
-        <input type="submit" value="Crear propiedad" class="boton boton-verde">
-        </form>
+        <input type="submit" value="Crear Propiedad" class="boton boton-verde">
+    </form>
+</main>
 
-    </main>
-
-<?php incluirTemplate('footer'); ?>    
+<?php incluirTemplate('footer'); ?>

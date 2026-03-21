@@ -2,7 +2,7 @@
 
 if(!function_exists('conectar')){
     function conectar(){
-        $db = mysqli_connect('127.0.0.1', 'root', 'root', 'bienesRaices_crud');
+        $db = new mysqli('127.0.0.1', 'root', 'root', 'bienesRaices_crud');
 
         if(!$db){
             echo "no se conecto";

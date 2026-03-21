@@ -1,25 +1,12 @@
     <?php 
 
         require '../includes/app.php';
-        $auth= estaAuth();
+        estaAuth();
 
-        if(!$auth){
-            header('location: /');
-        }
+        use App\Propiedad;
 
-        //importar db
-
-        require '../includes/config/databases.php';
-        $db=conectar();
-
-        //query
-
-        $query = "SELECT * FROM propiedades";
-
-        //consultar db
-
-        $resultadoDB =  mysqli_query($db, $query);
-
+        // implementar un metodo para obtener todas las propiedades
+        $propiedades = Propiedad::all();
 
         //mensaje condicional
         $resultado = $_GET['resultado'] ?? null;   
