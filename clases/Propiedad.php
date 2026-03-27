@@ -5,6 +5,7 @@ namespace App;
 class Propiedad {
     // DB
     protected static $db;
+    protected static $tabla = 'propiedades';
     protected static $columnasDB = ['id', 'titulo', 'precio', 'imagen', 'descripcion', 'habitaciones', 'wc', 'estacionamiento', 'creado', 'vendedores_id'];
 
     // errores
@@ -31,10 +32,18 @@ class Propiedad {
         $this->wc = $args['wc'] ?? '';
         $this->estacionamiento = $args['estacionamiento'] ?? '';
         $this->creado = date('Y-m-d');
-        $this->vendedores_id = $args['vendedores_id'] ?? '';
+        $this->vendedores_id = $args['vendedores_id'] ?? 1;
     }
 
     public function guardar() {
+        if(isset($this->id)) {
+            $this->actualizar();
+        }else{
+            $this->crear();
+        }
+    }
+
+    public function crear() {
 
     $datos = $this->sanitizarDatos();
 
@@ -50,7 +59,43 @@ class Propiedad {
     $query .= "')";
 
     $resultado = self::$db->query($query);
+    if($resultado){
+        header('location: /admin?resultado=1');
+    }
 }
+
+    public function actualizar() {
+        $datos = $this->sanitizarDatos();
+
+        $valores = [];
+        foreach($datos as $key => $value) {
+            $valores[] = "{$key}='{$value}'";
+        }
+
+        $query = "UPDATE " . static::$tabla . " SET ";
+        $query .= join(", ", $valores);
+        $query .= " WHERE id='" . self::$db->escape_string($this->id) . "' ";
+        $query .= "LIMIT 1";
+
+        $resultado = self::$db->query($query);
+      
+        if($resultado){
+                header('location: /admin?resultado=2'); 
+            }
+            
+        return $resultado;  
+    }
+
+    public function eliminar() {
+        $query = "DELETE FROM " . static::$tabla . " WHERE id = " . self::$db->escape_string($this->id) . " LIMIT 1";
+        $resultado = self::$db->query($query);
+
+        if($resultado){
+            $this->eliminarImagen();
+            header('location: /admin?resultado=3');
+        }
+        return $resultado;
+    }
 
     public static function setDB($database) {
         self::$db = $database;
@@ -122,8 +167,20 @@ class Propiedad {
     }
 
     public function setImg($imagen){
+        // Elimina la imagen previa
+        if($this->id) {
+            $this->eliminarImagen();
+        }
+        // asigna el nombre de la imagen al atributo 
         if($imagen){
             $this->imagen = $imagen;
+        }
+    }
+
+    public function eliminarImagen() {
+        $existeArchivo = file_exists(CARPETA_IMAGENES . $this->imagen);
+        if($existeArchivo) {
+            unlink(CARPETA_IMAGENES . $this->imagen);
         }
     }
 
@@ -134,6 +191,13 @@ class Propiedad {
         return $resultado;
     }
 
+    //buscar una propiedad por su id
+    public static function find ($id) {
+        $query = "SELECT * FROM " . static::$tabla . " WHERE id = {$id}";
+        $resultado = self::consultarSQL($query);
+        return array_shift($resultado);
+    }
+
     public static function consultarSQL($query) {
         // consultar a la base de datos
         $resultado = self::$db->query($query);
@@ -142,7 +206,12 @@ class Propiedad {
         $array = [];
         while($registro = $resultado->fetch_assoc()) {
             $array[] = static::crearObjeto($registro);
+
     }
+
+    $resultado->free();
+
+    return $array;
 }
 
     protected static function crearObjeto($registro) {
@@ -155,6 +224,15 @@ class Propiedad {
         }
 
         return $objeto;
+    }
+
+    //sincroniza el objeto en memoria con los cambios realizados por el usuario
+    public function sincronizar($args = []) {
+        foreach($args as $key => $value) {
+            if(property_exists($this, $key) && !is_null($value)) {
+                $this->$key = $value;
+            }
+        }
     }
  
 }
