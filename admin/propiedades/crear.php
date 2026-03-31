@@ -49,11 +49,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // guardar
-        $resultado = $propiedad->crear();
+        $resultado = $propiedad->guardar();
 
-        if($resultado) {
-            header('Location: /admin?resultado=1');
-        }
     }
 }
 
