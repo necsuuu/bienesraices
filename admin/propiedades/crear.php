@@ -1,25 +1,25 @@
-<?php 
+<?php
 
 require '../../includes/app.php';
 
 use App\Propiedad;
 use Intervention\Image\ImageManager as image;
 use Intervention\Image\Drivers\Gd\Driver;
+use App\Vendedor;
 
 estaAuth();
-
-$propiedad = new Propiedad;
 
 // DB
 $db = conectar();
 Propiedad::setDB($db);
 
-// vendedores
-$consulta = "SELECT * FROM vendedores";
-$resultado = mysqli_query($db, $consulta);
+// Obtener vendedores
+$vendedores = Vendedor::all();
 
 // errores
 $errores = Propiedad::getErrores();
+
+$propiedad = new Propiedad;
 
 if($_SERVER['REQUEST_METHOD'] === 'POST') {
     
@@ -54,7 +54,6 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-
 incluirTemplate('header');
 ?>
 
@@ -71,7 +70,10 @@ incluirTemplate('header');
 
     <form class="formulario" method="POST" enctype="multipart/form-data">
 
-        <?php include '../../includes/template/formulario_propiedades.php'; ?>
+        <?php incluirTemplate('formulario_propiedades', [
+            'propiedad' => $propiedad,
+            'vendedores' => $vendedores
+        ]); ?>
         
         <input type="submit" value="Crear Propiedad" class="boton boton-verde">
     </form>

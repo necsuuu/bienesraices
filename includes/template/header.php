@@ -5,6 +5,8 @@
     }
 
     $auth = $_SESSION['login'] ?? false;
+    $inicio = $inicio ?? false; // ← Agregar esta línea
+
 ?>
 
 <!DOCTYPE html>

@@ -1,7 +1,7 @@
 <?php 
 
     require 'includes/app.php';    
-    incluirTemplate('header', $inicio = true);
+    incluirTemplate('header', ['inicio' => true]);
 ?>
 
     <main class="contenedor seccion">

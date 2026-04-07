@@ -9,5 +9,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $db = conectar();
 
 use App\Propiedad;
+use App\Vendedor;
 
 Propiedad::setDB($db);
+Vendedor::setDB($db);

@@ -5,7 +5,12 @@ define('TEMPLATES_URL', __DIR__ . '/template');
 define('FUNCIONES_URL', __DIR__ . '/funciones.php');
 define('CARPETA_IMAGENES', __DIR__ . '/../imagenes/');
 
-function incluirTemplate(string $nombre, bool $inicio = false) {
+function incluirTemplate(string $nombre, array $datos = []) {
+
+    foreach($datos as $key => $value) {
+        $$key = $value; // crea variables dinámicamente
+    }
+
     include TEMPLATES_URL . "/{$nombre}.php";
 }
 

@@ -5,35 +5,11 @@ namespace App;
 class ActiveRecord{
     // DB
     protected static $db;
-    protected static $columnasDB = ['id', 'titulo', 'precio', 'imagen', 'descripcion', 'habitaciones', 'wc', 'estacionamiento', 'creado', 'vendedores_id'];
+    protected static $columnasDB = [];
     protected static $tabla = '';
 
     // errores
     protected static $errores = [];
-
-    public $id;
-    public $titulo;
-    public $precio;
-    public $imagen;
-    public $descripcion;
-    public $habitaciones;
-    public $wc;
-    public $estacionamiento;
-    public $creado;
-    public $vendedores_id;
-
-    public function __construct($args = []) {
-        $this->id = $args['id'] ?? null;
-        $this->titulo = $args['titulo'] ?? '';
-        $this->precio = $args['precio'] ?? '';
-        $this->imagen = $args['imagen'] ?? '';
-        $this->descripcion = $args['descripcion'] ?? '';
-        $this->habitaciones = $args['habitaciones'] ?? '';
-        $this->wc = $args['wc'] ?? '';
-        $this->estacionamiento = $args['estacionamiento'] ?? '';
-        $this->creado = date('Y-m-d');
-        $this->vendedores_id = $args['vendedores_id'] ?? 1;
-    }
 
     public function guardar() {
         if(!is_null($this->id)) {
@@ -52,7 +28,7 @@ class ActiveRecord{
         return;
     }
 
-    $query = "INSERT INTO propiedades (";
+    $query = "INSERT INTO" . static::$tabla . " (";
     $query .= join(", ", array_keys($datos));
     $query .= ") VALUES ('";
     $query .= join("', '", array_values($datos));
@@ -82,9 +58,9 @@ class ActiveRecord{
         if($resultado){
                 header('location: /admin?resultado=2'); 
             }
-            
+        
         return $resultado;  
-    }
+    } 
 
     public function eliminar() {
         $query = "DELETE FROM " . static::$tabla . " WHERE id = " . self::$db->escape_string($this->id) . " LIMIT 1";
@@ -186,7 +162,7 @@ class ActiveRecord{
 
     // lista todas las propiedades
     public static function all() {
-        $query = "SELECT * FROM " . self::$tabla;
+        $query = "SELECT * FROM " . static::$tabla;
         $resultado = self::consultarSQL($query);
         return $resultado;
     }
@@ -213,9 +189,19 @@ class ActiveRecord{
 
     return $array;
 }
+    public $id;
+    public $titulo;
+    public $precio;
+    public $imagen;
+    public $descripcion;
+    public $habitaciones;
+    public $wc;
+    public $estacionamiento;
+    public $creado;
+    public $vendedores_id;
 
     protected static function crearObjeto($registro) {
-        $objeto = new self;
+        $objeto = new static;
 
         foreach($registro as $key => $value) {
             if(property_exists($objeto, $key)) {

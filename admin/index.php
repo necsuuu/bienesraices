@@ -4,9 +4,11 @@
         estaAuth();
 
         use App\Propiedad;
+        use App\Vendedor;
 
         // implementar un metodo para obtener todas las propiedades
         $propiedades = Propiedad::all();
+        $vendedores = Vendedor::all();
 
         //mensaje condicional
         $resultado = $_GET['resultado'] ?? null;   
