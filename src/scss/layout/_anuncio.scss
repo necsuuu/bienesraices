@@ -1,9 +1,19 @@
+.contenedor-anuncios {
+    display: grid;
+    gap: 2rem;
+    align-items: stretch;
+    grid-template-columns: 1fr;
+}
+
 @include tablet {
     .contenedor-anuncios {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
-        gap: 2rem;
-        align-items: stretch;
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@include desktop {
+    .contenedor-anuncios {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 

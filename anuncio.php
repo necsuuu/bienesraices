@@ -1,5 +1,5 @@
 <?php 
-
+use App\Propiedad;
 require 'includes/app.php';
 
 $id = $_GET['id'];
@@ -9,46 +9,41 @@ if(!$id){
     header('location: /');
 }
 
-// DB
-$db = conectar();
-
-$query = "SELECT * FROM propiedades WHERE id = {$id}";
-$resultado = mysqli_query($db, $query);
-$propiedad = mysqli_fetch_assoc($resultado);
+$propiedad = Propiedad::find($id);
 
 incluirTemplate('header');
 ?>
 
 <main class="contenedor seccion contenido-centrado">
 
-<h1><?php echo $propiedad['titulo']; ?></h1>
+<h1><?php echo $propiedad->titulo; ?></h1>
 
-<img loading="lazy" src="/imagenes/<?php echo $propiedad['imagen']; ?>" alt="imagen propiedad">
+<img loading="lazy" src="/imagenes/<?php echo $propiedad->imagen; ?>" alt="imagen propiedad">
 
 <div class="resumen-propiedad">
 
-<p class="precio">$<?php echo $propiedad['precio']; ?></p>
+<p class="precio">$<?php echo $propiedad->precio; ?></p>
 
 <ul class="iconos-caracteristicas">
 
 <li>
 <img loading="lazy" src="build/img/icono_wc.svg">
-<p><?php echo $propiedad['wc']; ?></p>
+<p><?php echo $propiedad->wc; ?></p>
 </li>
 
 <li>
 <img loading="lazy" src="build/img/icono_estacionamiento.svg">
-<p><?php echo $propiedad['estacionamiento']; ?></p>
+<p><?php echo $propiedad->estacionamiento; ?></p>
 </li>
 
 <li>
 <img loading="lazy" src="build/img/icono_dormitorio.svg">
-<p><?php echo $propiedad['habitaciones']; ?></p>
+<p><?php echo $propiedad->habitaciones; ?></p>
 </li>
 
 </ul>
 
-<p><?php echo $propiedad['descripcion']; ?></p>
+<p><?php echo $propiedad->descripcion; ?></p>
 
 </div>
 
