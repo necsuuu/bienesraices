@@ -23,12 +23,7 @@ class ActiveRecord{
 
     $datos = $this->sanitizarDatos();
 
-    if(!$this->precio){
-        echo "El precio es obligatorio";
-        return;
-    }
-
-    $query = "INSERT INTO" . static::$tabla . " (";
+    $query = "INSERT INTO " . static::$tabla . " (";
     $query .= join(", ", array_keys($datos));
     $query .= ") VALUES ('";
     $query .= join("', '", array_values($datos));
@@ -79,7 +74,7 @@ class ActiveRecord{
 
     public function datos(){
         $datos = [];
-        foreach(self::$columnasDB as $columna){
+        foreach(static::$columnasDB as $columna){
             if($columna === 'id') continue;
             $datos[$columna] = $this->$columna; 
         }
@@ -100,46 +95,13 @@ class ActiveRecord{
 
     // Validación
     public static function getErrores() {
-
-        return self::$errores;
+        return static::$errores;
 
     }
 
     public function validar() {
-
-        if(!$this->titulo) {
-            self::$errores[] = "El título es obligatorio";
-        }
-
-        if(!$this->precio) {
-            self::$errores[] = "El precio es obligatorio";
-        }
-
-        if(strlen($this->descripcion) < 50) {
-            self::$errores[] = "La descripción debe tener al menos 50 caracteres";
-        }
-
-        if(!$this->habitaciones) {
-            self::$errores[] = "El número de habitaciones es obligatorio";
-        }
-
-        if(!$this->wc) {
-            self::$errores[] = "El número de baños es obligatorio";
-        }
-
-        if(!$this->estacionamiento) {
-            self::$errores[] = "El número de estacionamientos es obligatorio";
-        }
-
-        if(!$this->vendedores_id) {
-            self::$errores[] = "El vendedor es obligatorio";
-        }
-
-        if(!$this->imagen) {
-            self::$errores[] = "La imagen es obligatoria";
-        }
-
-        return self::$errores;
+        static::$errores = [];
+        return static::$errores;
     }
 
     public function setImg($imagen){

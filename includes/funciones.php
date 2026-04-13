@@ -36,3 +36,10 @@ function s($html) : string {
     $s = htmlspecialchars($html ?? '');
     return $s;
 }
+
+// validar tipo de contenido
+function validarTipoContenido($tipo) : string {
+    $tipos = ['vendedor', 'propieadades'];
+
+    return in_array($tipo, $tipos) ? $tipo : false;
+}
