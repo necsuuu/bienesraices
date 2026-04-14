@@ -6,30 +6,24 @@ use App\Vendedor;
 
 estaAuth();
 
-//validar que sea un ID valido
 $id = $_GET['id'];
 $id = filter_var($id, FILTER_VALIDATE_INT);
 
 if(!$id) {
     header('Location: /admin');
+    exit;
 }
 
 // Obtener los datos del vendedor a actualizar
-$vendedor = Vendedor::find($id);
+$vendedor = Vendedor::find($id); // ✅ Solo esta línea, sin "new Vendedor"
 
-$vendedor = new Vendedor;
-
-// Arreglo con mensajes de errores
 $errores = Vendedor::getErrores();  
 
-// Ejecutar el codigo despues de que el usuario envia el formulario
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
     
-    // Asignar los atributos
     $args = $_POST['vendedor'];
     $vendedor->sincronizar($args);
 
-    // Validar que no haya campos vacios
     $errores = $vendedor->validar();
 
     if(empty($errores)){
@@ -51,12 +45,10 @@ incluirTemplate('header');
         </div>
     <?php endforeach; ?>
 
-    <form class="formulario" method="POST"">
-
+    <form class="formulario" method="POST">
         <?php include __DIR__ . '/../../includes/template/formulario_vendedores.php'; ?>
-        
         <input type="submit" value="Guardar Cambios" class="boton boton-verde">
     </form>
 </main>
 
-<?php incluirTemplate('footer'); ?> 
+<?php incluirTemplate('footer'); ?>

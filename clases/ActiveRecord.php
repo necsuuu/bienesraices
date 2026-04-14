@@ -188,5 +188,11 @@ class ActiveRecord{
             }
         }
     }
+
+    public static function where($columna, $valor) {
+    $query = "SELECT * FROM " . static::$tabla . 
+             " WHERE {$columna} = '" . self::$db->escape_string($valor) . "'";
+    return self::consultarSQL($query);
+}
  
 }

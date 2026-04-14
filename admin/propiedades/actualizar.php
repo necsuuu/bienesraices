@@ -33,37 +33,32 @@
 
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
     
-        //asignar los atributos
-        if(isset($_POST['propiedad'])) {
-            $args = $_POST['propiedad'];
-            $propiedad->sincronizar($args);
-        }
+    if(isset($_POST['propiedad'])) {
+        $args = $_POST['propiedad'];
+        $propiedad->sincronizar($args);
+    }
 
-        //validacion
-        $error = $propiedad->validar();
+    $error = $propiedad->validar();
 
-        //subida de archivos
-        //nombre unico
+    // Subida de imagen
+    if(isset($_FILES['propiedad']['tmp_name']['imagen']) && $_FILES['propiedad']['tmp_name']['imagen']){
         $nombreImg = md5(uniqid(rand(), true)) . ".jpg";
-
-        if(isset($_FILES['propiedad']['tmp_name']['imagen']) && $_FILES['propiedad']['tmp_name']['imagen']){
         $manager = new ImageManager(new Driver());
         $imagen = $manager->read($_FILES['propiedad']['tmp_name']['imagen'])->cover(800, 600);
         $propiedad->setImg($nombreImg);
-        }
-        
-        
-        //revisar errores
 
+        // ✅ Guardar imagen solo si no hay errores y se subió una imagen
         if(empty($error)){
-
-        //almacenar la imagen
-        $imagen->save(CARPETA_IMAGENES . $nombreImg);
-
-        $propiedad->guardar();
-            
+            $imagen->save(CARPETA_IMAGENES . $nombreImg);
         }
-    }   
+    }
+
+    // Guardar propiedad si no hay errores
+    if(empty($error)){
+        $propiedad->guardar();
+    }
+}
+   
     incluirTemplate('header');
 ?>
     <main class="contenedor seccion">
