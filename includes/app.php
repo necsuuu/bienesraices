@@ -8,8 +8,6 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 $db = conectar();
 
-use App\Propiedad;
-use App\Vendedor;
+use App\ActiveRecord;
 
-Propiedad::setDB($db);
-Vendedor::setDB($db);
+ActiveRecord::setDB($db);
